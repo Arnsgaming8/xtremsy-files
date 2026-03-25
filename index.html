@@ -1290,7 +1290,17 @@
             const file = room.files.find(f => f.id === fileId);
             if (!file) return;
 
-            window.open(file.dataUrl, '_blank');
+            // Convert data URL to blob URL for more reliable opening
+            const byteCharacters = atob(file.dataUrl.split(',')[1]);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: file.type });
+            const blobUrl = URL.createObjectURL(blob);
+            
+            window.open(blobUrl, '_blank');
         }
 
         // File Expiration
