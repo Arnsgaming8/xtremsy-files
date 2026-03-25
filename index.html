@@ -1289,10 +1289,7 @@
             const file = room.files.find(f => f.id === fileId);
             if (!file) return;
 
-            const link = document.createElement('a');
-            link.href = file.dataUrl;
-            link.target = '_blank';
-            link.click();
+            window.open(file.dataUrl, '_blank');
         }
 
         // File Expiration
