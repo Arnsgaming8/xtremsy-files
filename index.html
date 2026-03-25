@@ -1226,7 +1226,7 @@
                 
                 return `
                     <div class="file-card" data-file-id="${file.id}">
-                        <button class="file-delete-btn" 
+                        <button class="file-delete-btn ${isMyFile || file.isServerFile ? '' : 'hidden'}" 
                                 onclick="deleteFile('${file.id}')"
                                 oncontextmenu="deleteFile('${file.id}')"
                                 title="Delete file (or right-click)">
@@ -1392,6 +1392,12 @@
 
             const file = rooms[roomIndex].files.find(f => f.id === fileId);
             if (!file) return;
+
+            // Only allow deleting files you uploaded (unless it's a server file anyone can delete)
+            if (!file.isServerFile && file.uploadedBy !== currentUserId) {
+                showToast('You can only delete your own files', 'error');
+                return;
+            }
 
             // If it's a server file, delete from server too
             if (file.isServerFile) {
