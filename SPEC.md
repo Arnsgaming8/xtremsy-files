@@ -115,7 +115,7 @@
 - Each file: { id, name, size, type, uploadedBy, uploadedAt, dataUrl }
 
 ### Edge Cases
-- Handle large files (warn if > 50MB)
+- Handle large files
 - Handle duplicate filenames
 - Handle empty room
 - Handle expired/invalid room ID

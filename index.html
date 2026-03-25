@@ -893,7 +893,7 @@
             <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
                 <div class="upload-zone-icon">📁</div>
                 <p class="upload-zone-text"><strong>Click to upload</strong> or drag and drop</p>
-                <p class="upload-zone-hint">Files expire after 2 days • Max 50MB per file</p>
+                <p class="upload-zone-hint">Files expire after 2 days</p>
                 <div class="upload-progress-container" id="uploadProgressContainer" style="display: none;">
                     <div class="upload-progress-bar" id="uploadProgressBar"></div>
                     <p class="upload-progress-text" id="uploadProgressText">Uploading...</p>
@@ -1262,13 +1262,8 @@
 
             let uploaded = 0;
             const totalFiles = files.length;
-            const maxSize = 50 * 1024 * 1024; // 50MB
 
             Array.from(files).forEach(file => {
-                if (file.size > maxSize) {
-                    showToast(`${file.name} is too large (max 50MB)`, 'error');
-                    return;
-                }
 
                 const reader = new FileReader();
                 reader.onprogress = function(e) {
