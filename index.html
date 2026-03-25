@@ -1391,7 +1391,7 @@
             if (roomIndex === -1) return;
 
             const file = rooms[roomIndex].files.find(f => f.id === fileId);
-            if (!file || file.uploadedBy !== currentUserId) return;
+            if (!file) return;
 
             // If it's a server file, delete from server too
             if (file.isServerFile) {
