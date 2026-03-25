@@ -934,6 +934,11 @@
             SAVED_ROOMS: 'xtremsy_saved_rooms'
         };
 
+        // Server API - change this to your deployed server URL
+        const API_BASE = window.location.protocol === 'file:' 
+            ? 'http://localhost:3000' 
+            : '/api';
+
         let currentRoomId = null;
         let currentUserId = null;
 
@@ -1136,6 +1141,8 @@
             currentRoomId = roomId;
             showRoomView();
             renderRoom();
+            // Fetch files from server
+            fetchServerFiles();
         }
 
         function checkURLParams() {
@@ -1256,9 +1263,7 @@
         }
 
         function uploadFiles(files) {
-            const rooms = loadRooms();
-            const roomIndex = rooms.findIndex(r => r.id === currentRoomId);
-            if (roomIndex === -1) return;
+            if (!currentRoomId) return;
 
             // Show progress bar
             const progressContainer = document.getElementById('uploadProgressContainer');
@@ -1272,30 +1277,44 @@
             const totalFiles = files.length;
 
             Array.from(files).forEach(file => {
+                const formData = new FormData();
+                formData.append('file', file);
 
-                const reader = new FileReader();
-                reader.onprogress = function(e) {
+                const xhr = new XMLHttpRequest();
+                
+                xhr.upload.onprogress = function(e) {
                     if (e.lengthComputable) {
                         const percent = Math.round((e.loaded / e.total) * 100);
-                        progressBar.style.setProperty('--progress', percent + '%');
                         progressText.textContent = `Uploading ${file.name}... ${percent}%`;
                     }
                 };
-                reader.onload = function(e) {
-                    const fileData = {
-                        id: generateId(),
-                        name: file.name,
-                        size: file.size,
-                        type: file.type,
-                        uploadedBy: currentUserId,
-                        uploadedAt: Date.now(),
-                        dataUrl: e.target.result
-                    };
 
-                    rooms[roomIndex].files.push(fileData);
-                    saveRooms(rooms);
-                    renderFiles(rooms[roomIndex].files);
-                    
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            // Store file reference in localStorage (just metadata, not the file itself)
+                            const rooms = loadRooms();
+                            const roomIndex = rooms.findIndex(r => r.id === currentRoomId);
+                            if (roomIndex !== -1) {
+                                rooms[roomIndex].files.push({
+                                    id: response.file.id,
+                                    name: response.file.name,
+                                    size: response.file.size,
+                                    type: response.file.type,
+                                    url: response.file.url,
+                                    uploadedBy: currentUserId,
+                                    uploadedAt: response.file.uploadedAt,
+                                    isServerFile: true
+                                });
+                                saveRooms(rooms);
+                                renderFiles(rooms[roomIndex].files);
+                            }
+                        }
+                    } else {
+                        showToast(`Failed to upload ${file.name}`, 'error');
+                    }
+
                     uploaded++;
                     const progress = Math.round((uploaded / totalFiles) * 100);
                     progressBar.style.setProperty('--progress', progress + '%');
@@ -1306,10 +1325,57 @@
                             progressContainer.style.display = 'none';
                         }, 1000);
                         showToast(`Uploaded ${uploaded} file(s)`, 'success');
+                        // Refresh file list from server
+                        fetchServerFiles();
                     }
                 };
-                reader.readAsDataURL(file);
+
+                xhr.onerror = function() {
+                    showToast(`Failed to upload ${file.name}`, 'error');
+                    uploaded++;
+                    if (uploaded === totalFiles) {
+                        showToast(`Uploaded ${uploaded} file(s) with errors`, 'error');
+                        progressContainer.style.display = 'none';
+                    }
+                };
+
+                xhr.open('POST', `${API_BASE}/rooms/${currentRoomId}/files`);
+                xhr.send(formData);
             });
+        }
+
+        // Fetch files from server
+        async function fetchServerFiles() {
+            if (!currentRoomId) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/rooms/${currentRoomId}/files`);
+                const data = await response.json();
+                
+                if (data.files && data.files.length > 0) {
+                    const rooms = loadRooms();
+                    const roomIndex = rooms.findIndex(r => r.id === currentRoomId);
+                    if (roomIndex !== -1) {
+                        // Merge server files with local metadata
+                        const existingFiles = rooms[roomIndex].files || [];
+                        const serverFileIds = new Set(data.files.map(f => f.id));
+                        
+                        // Keep local-only files and update server files
+                        const localFiles = existingFiles.filter(f => !f.isServerFile);
+                        const updatedServerFiles = data.files.map(f => ({
+                            ...f,
+                            uploadedBy: f.uploadedBy || 'unknown',
+                            isServerFile: true
+                        }));
+                        
+                        rooms[roomIndex].files = [...localFiles, ...updatedServerFiles];
+                        saveRooms(rooms);
+                        renderFiles(rooms[roomIndex].files);
+                    }
+                }
+            } catch (e) {
+                console.error('Failed to fetch server files:', e);
+            }
         }
 
         function deleteFile(fileId) {
@@ -1318,12 +1384,19 @@
             if (roomIndex === -1) return;
 
             const file = rooms[roomIndex].files.find(f => f.id === fileId);
-            if (file && file.uploadedBy === currentUserId) {
-                rooms[roomIndex].files = rooms[roomIndex].files.filter(f => f.id !== fileId);
-                saveRooms(rooms);
-                renderFiles(rooms[roomIndex].files);
-                showToast('File deleted', 'success');
+            if (!file || file.uploadedBy !== currentUserId) return;
+
+            // If it's a server file, delete from server too
+            if (file.isServerFile) {
+                fetch(`${API_BASE}/rooms/${currentRoomId}/files/${fileId}`, {
+                    method: 'DELETE'
+                }).catch(e => console.error('Failed to delete server file:', e));
             }
+
+            rooms[roomIndex].files = rooms[roomIndex].files.filter(f => f.id !== fileId);
+            saveRooms(rooms);
+            renderFiles(rooms[roomIndex].files);
+            showToast('File deleted', 'success');
         }
 
         function downloadFile(fileId) {
@@ -1334,10 +1407,19 @@
             const file = room.files.find(f => f.id === fileId);
             if (!file) return;
 
-            const link = document.createElement('a');
-            link.href = file.dataUrl;
-            link.download = file.name;
-            link.click();
+            // Server file - use server URL
+            if (file.isServerFile) {
+                const link = document.createElement('a');
+                link.href = `${API_BASE}/rooms/${currentRoomId}/files/${fileId}`;
+                link.download = file.name;
+                link.click();
+            } else {
+                // Local file - use dataUrl
+                const link = document.createElement('a');
+                link.href = file.dataUrl;
+                link.download = file.name;
+                link.click();
+            }
         }
 
         function openFileInNewTab(fileId) {
@@ -1348,17 +1430,22 @@
             const file = room.files.find(f => f.id === fileId);
             if (!file) return;
 
-            // Convert data URL to blob URL for more reliable opening
-            const byteCharacters = atob(file.dataUrl.split(',')[1]);
-            const byteNumbers = new Array(byteCharacters.length);
-            for (let i = 0; i < byteCharacters.length; i++) {
-                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            // Server file - open directly from server
+            if (file.isServerFile) {
+                window.open(`${API_BASE}/rooms/${currentRoomId}/files/${fileId}`, '_blank');
+            } else {
+                // Local file - convert dataUrl to blob
+                const byteCharacters = atob(file.dataUrl.split(',')[1]);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                const blob = new Blob([byteArray], { type: file.type });
+                const blobUrl = URL.createObjectURL(blob);
+                
+                window.open(blobUrl, '_blank');
             }
-            const byteArray = new Uint8Array(byteNumbers);
-            const blob = new Blob([byteArray], { type: file.type });
-            const blobUrl = URL.createObjectURL(blob);
-            
-            window.open(blobUrl, '_blank');
         }
 
         // File Expiration
