@@ -599,6 +599,194 @@
             width: 24px;
             height: 24px;
         }
+
+        /* Saved Rooms Sidebar */
+        .saved-sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 320px;
+            height: 100vh;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .saved-sidebar.open {
+            transform: translateX(0);
+        }
+
+        .saved-sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .saved-sidebar-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .saved-sidebar-close {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .saved-sidebar-close:hover {
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .saved-rooms-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .saved-room-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+            transition: all 0.2s;
+        }
+
+        .saved-room-item:hover {
+            border-color: var(--accent-primary);
+        }
+
+        .saved-room-info {
+            flex: 1;
+            min-width: 0;
+            cursor: pointer;
+        }
+
+        .saved-room-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .saved-room-date {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .saved-room-remove {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            margin-left: 8px;
+            transition: all 0.2s;
+        }
+
+        .saved-room-remove:hover {
+            color: var(--error);
+            background: rgba(255, 71, 87, 0.1);
+        }
+
+        .saved-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .saved-empty-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            opacity: 0.4;
+        }
+
+        .saved-empty-text {
+            font-size: 0.9rem;
+        }
+
+        .sidebar-toggle {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            width: 56px;
+            height: 56px;
+            background: var(--accent-gradient);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 20px var(--glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.2s;
+            z-index: 150;
+        }
+
+        .sidebar-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px var(--glow);
+        }
+
+        .sidebar-toggle.has-saved {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 4px 20px var(--glow); }
+            50% { box-shadow: 0 4px 30px rgba(255, 62, 62, 0.5); }
+        }
+
+        .save-room-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .save-room-btn:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        .save-room-btn.saved {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            background: rgba(255, 62, 62, 0.1);
+        }
+
+        .save-room-btn .icon-sm {
+            width: 16px;
+            height: 16px;
+        }
     </style>
 </head>
 <body>
@@ -641,7 +829,13 @@
             <div class="room-header">
                 <div class="room-title-row">
                     <h1 class="room-title" id="roomTitle">Room</h1>
-                    <button class="btn btn-ghost" onclick="goHome()">← Leave Room</button>
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <button class="save-room-btn" id="saveRoomBtn" onclick="toggleSaveRoom()">
+                            <svg class="icon-sm" viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+                            <span id="saveBtnText">Save</span>
+                        </button>
+                        <button class="btn btn-ghost" onclick="goHome()">← Leave Room</button>
+                    </div>
                 </div>
                 <div class="room-link-container">
                     <span class="room-link" id="roomLink"></span>
@@ -667,11 +861,28 @@
 
     <div class="toast-container" id="toastContainer"></div>
 
+    <!-- Saved Rooms Sidebar -->
+    <div class="saved-sidebar" id="savedSidebar">
+        <div class="saved-sidebar-header">
+            <span class="saved-sidebar-title">📌 Saved Rooms</span>
+            <button class="saved-sidebar-close" onclick="toggleSavedSidebar()">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </button>
+        </div>
+        <div class="saved-rooms-list" id="savedRoomsList"></div>
+    </div>
+
+    <!-- Sidebar Toggle Button -->
+    <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSavedSidebar()">
+        📌
+    </button>
+
     <script>
         // State
         const STORAGE_KEYS = {
             USER_ID: 'xtremsy_user_id',
-            ROOMS: 'xtremsy_rooms'
+            ROOMS: 'xtremsy_rooms',
+            SAVED_ROOMS: 'xtremsy_saved_rooms'
         };
 
         let currentRoomId = null;
@@ -683,6 +894,8 @@
             loadRooms();
             checkURLParams();
             setInterval(checkExpiredFiles, 60000); // Check every minute
+            renderSavedRooms();
+            updateSidebarToggleState();
         }
 
         // User ID
@@ -713,6 +926,117 @@
 
         function saveRooms(rooms) {
             localStorage.setItem(STORAGE_KEYS.ROOMS, JSON.stringify(rooms));
+        }
+
+        // Saved Rooms Management
+        function getSavedRooms() {
+            return JSON.parse(localStorage.getItem(STORAGE_KEYS.SAVED_ROOMS) || '[]');
+        }
+
+        function saveSavedRooms(savedRooms) {
+            localStorage.setItem(STORAGE_KEYS.SAVED_ROOMS, JSON.stringify(savedRooms));
+            updateSidebarToggleState();
+        }
+
+        function isRoomSaved(roomId) {
+            const savedRooms = getSavedRooms();
+            return savedRooms.some(r => r.id === roomId);
+        }
+
+        function toggleSaveRoom() {
+            if (!currentRoomId) return;
+            
+            const rooms = loadRooms();
+            const room = rooms.find(r => r.id === currentRoomId);
+            if (!room) return;
+
+            const savedRooms = getSavedRooms();
+            const existingIndex = savedRooms.findIndex(r => r.id === currentRoomId);
+
+            if (existingIndex !== -1) {
+                savedRooms.splice(existingIndex, 1);
+                showToast('Room removed from saved', 'info');
+            } else {
+                savedRooms.push({
+                    id: room.id,
+                    name: room.name,
+                    savedAt: Date.now()
+                });
+                showToast('Room saved!', 'success');
+            }
+
+            saveSavedRooms(savedRooms);
+            updateSaveButtonState();
+            renderSavedRooms();
+        }
+
+        function updateSaveButtonState() {
+            const btn = document.getElementById('saveRoomBtn');
+            const text = document.getElementById('saveBtnText');
+            if (!btn || !text) return;
+
+            if (currentRoomId && isRoomSaved(currentRoomId)) {
+                btn.classList.add('saved');
+                text.textContent = 'Saved';
+            } else {
+                btn.classList.remove('saved');
+                text.textContent = 'Save';
+            }
+        }
+
+        function updateSidebarToggleState() {
+            const toggle = document.getElementById('sidebarToggle');
+            const savedRooms = getSavedRooms();
+            if (toggle) {
+                if (savedRooms.length > 0) {
+                    toggle.classList.add('has-saved');
+                } else {
+                    toggle.classList.remove('has-saved');
+                }
+            }
+        }
+
+        function toggleSavedSidebar() {
+            const sidebar = document.getElementById('savedSidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        function renderSavedRooms() {
+            const list = document.getElementById('savedRoomsList');
+            if (!list) return;
+
+            const savedRooms = getSavedRooms();
+
+            if (savedRooms.length === 0) {
+                list.innerHTML = `
+                    <div class="saved-empty">
+                        <div class="saved-empty-icon">📌</div>
+                        <p class="saved-empty-text">No saved rooms yet.<br>Save rooms to access them quickly!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = savedRooms.map(room => `
+                <div class="saved-room-item">
+                    <div class="saved-room-info" onclick="joinRoomById('${room.id}')">
+                        <div class="saved-room-name">${room.name}</div>
+                        <div class="saved-room-date">Saved ${formatTime(room.savedAt)}</div>
+                    </div>
+                    <button class="saved-room-remove" onclick="removeSavedRoom('${room.id}')" title="Remove from saved">
+                        <svg class="icon-sm" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function removeSavedRoom(roomId) {
+            const savedRooms = getSavedRooms();
+            const filtered = savedRooms.filter(r => r.id !== roomId);
+            saveSavedRooms(filtered);
+            renderSavedRooms();
+            updateSaveButtonState();
+            showToast('Room removed from saved', 'info');
         }
 
         function createRoom() {
@@ -782,6 +1106,7 @@
         function goHome() {
             currentRoomId = null;
             showHomeView();
+            updateSaveButtonState();
         }
 
         function showCreateRoom() {
@@ -798,6 +1123,7 @@
             document.getElementById('roomLink').textContent = `${window.location.origin}${window.location.pathname}?room=${room.id}`;
             
             renderFiles(room.files);
+            updateSaveButtonState();
         }
 
         function renderFiles(files) {
