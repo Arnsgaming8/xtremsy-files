@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xtremsy Files - Share Without Limits</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a25;
+            --accent-primary: #ff3e3e;
+            --accent-secondary: #ff6b35;
+            --accent-gradient: linear-gradient(135deg, #ff3e3e 0%, #ff6b35 100%);
+            --text-primary: #ffffff;
+            --text-secondary: #8a8a9a;
+            --success: #00d97e;
+            --warning: #ffc107;
+            --error: #ff4757;
+            --border: #2a2a3a;
+            --glow: rgba(255, 62, 62, 0.3);
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            background-image: 
+                radial-gradient(ellipse at 20% 0%, rgba(255, 62, 62, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(255, 107, 53, 0.06) 0%, transparent 50%);
+        }
+
+        /* Header */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 10, 15, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .logo:hover {
+            opacity: 0.85;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white;
+            box-shadow: 0 4px 15px var(--glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px var(--glow);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-secondary);
+            border-color: var(--accent-primary);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-secondary);
+            padding: 8px 12px;
+        }
+
+        .btn-ghost:hover {
+            color: var(--text-primary);
+        }
+
+        .btn-icon {
+            padding: 8px;
+            border-radius: 6px;
+        }
+
+        /* Main Container */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Home View */
+        .home-view {
+            text-align: center;
+            max-width: 600px;
+            margin: 60px auto;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+        }
+
+        .hero-title span {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 48px;
+        }
+
+        .create-room-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 32px;
+        }
+
+        .create-room-section h2 {
+            font-size: 1.25rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .join-room-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+        }
+
+        .join-room-section h2 {
+            font-size: 1.25rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        input[type="text"], input[type="url"] {
+            flex: 1;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px 18px;
+            font-size: 1rem;
+            color: var(--text-primary);
+            font-family: 'Outfit', sans-serif;
+            transition: all 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px var(--glow);
+        }
+
+        input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .or-divider {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 32px 0;
+            color: var(--text-secondary);
+        }
+
+        .or-divider::before, .or-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* Room View */
+        .room-view {
+            display: none;
+        }
+
+        .room-view.active {
+            display: block;
+        }
+
+        .room-header {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+
+        .room-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .room-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .room-link-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-tertiary);
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .room-link {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            color: var(--accent-secondary);
+            word-break: break-all;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px;
+            transition: color 0.2s;
+            flex-shrink: 0;
+        }
+
+        .copy-btn:hover {
+            color: var(--text-primary);
+        }
+
+        /* Upload Zone */
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            padding: 48px 24px;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+            background: var(--bg-secondary);
+            margin-bottom: 32px;
+        }
+
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: var(--accent-primary);
+            background: rgba(255, 62, 62, 0.05);
+        }
+
+        .upload-zone-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.6;
+        }
+
+        .upload-zone-text {
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .upload-zone-text strong {
+            color: var(--accent-primary);
+        }
+
+        .upload-zone-hint {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            opacity: 0.7;
+        }
+
+        /* Files Grid */
+        .files-section h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .files-count {
+            background: var(--bg-tertiary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .files-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .file-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .file-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-primary);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .file-card-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .file-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .file-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .file-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 4px;
+        }
+
+        .file-size {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .file-delete-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            opacity: 0;
+            transition: all 0.2s;
+        }
+
+        .file-card:hover .file-delete-btn {
+            opacity: 1;
+        }
+
+        .file-delete-btn:hover {
+            color: var(--error);
+            background: rgba(255, 71, 87, 0.1);
+        }
+
+        .file-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .file-time {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .file-expiry {
+            font-size: 0.8rem;
+            color: var(--warning);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .file-expiry.expired {
+            color: var(--error);
+        }
+
+        .file-download-btn {
+            background: var(--accent-gradient);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .file-download-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 24px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toast {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            animation: slideIn 0.3s ease;
+            max-width: 400px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast-success {
+            border-color: var(--success);
+        }
+
+        .toast-error {
+            border-color: var(--error);
+        }
+
+        .toast-icon {
+            font-size: 1.25rem;
+        }
+
+        .toast-message {
+            font-size: 0.9rem;
+        }
+
+        /* Hidden */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
+
+            .room-title-row {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start;
+            }
+
+            .files-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .upload-zone {
+                padding: 32px 16px;
+            }
+        }
+
+        /* SVG Icons */
+        .icon {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .icon-sm {
+            width: 16px;
+            height: 16px;
+        }
+
+        .icon-lg {
+            width: 24px;
+            height: 24px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo" onclick="goHome()">Xtremsy Files</div>
+            <div class="header-actions">
+                <button class="btn btn-ghost" id="newRoomBtn" onclick="showCreateRoom()">+ New Room</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Home View -->
+        <div id="homeView" class="home-view">
+            <h1 class="hero-title">Share Files <span>Xtremsely</span></h1>
+            <p class="hero-subtitle">Create a room, share the link, and exchange files that last 2 days. Never expire your room.</p>
+            
+            <div class="create-room-section">
+                <h2>Create a New Room</h2>
+                <button class="btn btn-primary" onclick="createRoom()">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+                    Create Room
+                </button>
+            </div>
+
+            <div class="or-divider">or</div>
+
+            <div class="join-room-section">
+                <h2>Join Existing Room</h2>
+                <div class="input-group">
+                    <input type="text" id="joinRoomInput" placeholder="Enter room ID (e.g., abc123xyz)" onkeypress="handleJoinKeypress(event)">
+                    <button class="btn btn-secondary" onclick="joinRoom()">Join</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Room View -->
+        <div id="roomView" class="room-view">
+            <div class="room-header">
+                <div class="room-title-row">
+                    <h1 class="room-title" id="roomTitle">Room</h1>
+                    <button class="btn btn-ghost" onclick="goHome()">← Leave Room</button>
+                </div>
+                <div class="room-link-container">
+                    <span class="room-link" id="roomLink"></span>
+                    <button class="copy-btn" onclick="copyRoomLink()" title="Copy link">
+                        <svg class="icon-sm" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-zone-icon">📁</div>
+                <p class="upload-zone-text"><strong>Click to upload</strong> or drag and drop</p>
+                <p class="upload-zone-hint">Files expire after 2 days • Max 50MB per file</p>
+                <input type="file" id="fileInput" multiple hidden onchange="handleFileSelect(event)">
+            </div>
+
+            <div class="files-section">
+                <h2>Files <span class="files-count" id="filesCount">0</span></h2>
+                <div class="files-grid" id="filesGrid"></div>
+            </div>
+        </div>
+    </main>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // State
+        const STORAGE_KEYS = {
+            USER_ID: 'xtremsy_user_id',
+            ROOMS: 'xtremsy_rooms'
+        };
+
+        let currentRoomId = null;
+        let currentUserId = null;
+
+        // Initialize
+        function init() {
+            currentUserId = getUserId();
+            loadRooms();
+            checkURLParams();
+            setInterval(checkExpiredFiles, 60000); // Check every minute
+        }
+
+        // User ID
+        function getUserId() {
+            let userId = localStorage.getItem(STORAGE_KEYS.USER_ID);
+            if (!userId) {
+                userId = generateId();
+                localStorage.setItem(STORAGE_KEYS.USER_ID, userId);
+            }
+            return userId;
+        }
+
+        // Generate unique ID
+        function generateId() {
+            const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            let id = '';
+            for (let i = 0; i < 8; i++) {
+                id += chars[Math.floor(Math.random() * chars.length)];
+            }
+            return id;
+        }
+
+        // Room Management
+        function loadRooms() {
+            const rooms = JSON.parse(localStorage.getItem(STORAGE_KEYS.ROOMS) || '[]');
+            return rooms;
+        }
+
+        function saveRooms(rooms) {
+            localStorage.setItem(STORAGE_KEYS.ROOMS, JSON.stringify(rooms));
+        }
+
+        function createRoom() {
+            const rooms = loadRooms();
+            const roomId = generateId();
+            const room = {
+                id: roomId,
+                name: `Room ${roomId.substring(0, 4)}`,
+                createdAt: Date.now(),
+                files: []
+            };
+            rooms.push(room);
+            saveRooms(rooms);
+            joinRoomById(roomId);
+            showToast('Room created!', 'success');
+        }
+
+        function joinRoom() {
+            const input = document.getElementById('joinRoomInput');
+            const roomId = input.value.trim();
+            if (roomId) {
+                joinRoomById(roomId);
+                input.value = '';
+            }
+        }
+
+        function handleJoinKeypress(event) {
+            if (event.key === 'Enter') {
+                joinRoom();
+            }
+        }
+
+        function joinRoomById(roomId) {
+            const rooms = loadRooms();
+            const room = rooms.find(r => r.id === roomId);
+            if (!room) {
+                showToast('Room not found', 'error');
+                return;
+            }
+            currentRoomId = roomId;
+            showRoomView();
+            renderRoom();
+        }
+
+        function checkURLParams() {
+            const params = new URLSearchParams(window.location.search);
+            const roomId = params.get('room');
+            if (roomId) {
+                joinRoomById(roomId);
+            }
+        }
+
+        // View Management
+        function showHomeView() {
+            document.getElementById('homeView').classList.remove('hidden');
+            document.getElementById('roomView').classList.remove('active');
+            window.history.replaceState({}, '', window.location.pathname);
+        }
+
+        function showRoomView() {
+            document.getElementById('homeView').classList.add('hidden');
+            document.getElementById('roomView').classList.add('active');
+            const url = `${window.location.origin}${window.location.pathname}?room=${currentRoomId}`;
+            window.history.replaceState({}, '', url);
+        }
+
+        function goHome() {
+            currentRoomId = null;
+            showHomeView();
+        }
+
+        function showCreateRoom() {
+            createRoom();
+        }
+
+        // Room Rendering
+        function renderRoom() {
+            const rooms = loadRooms();
+            const room = rooms.find(r => r.id === currentRoomId);
+            if (!room) return;
+
+            document.getElementById('roomTitle').textContent = room.name;
+            document.getElementById('roomLink').textContent = `${window.location.origin}${window.location.pathname}?room=${room.id}`;
+            
+            renderFiles(room.files);
+        }
+
+        function renderFiles(files) {
+            const grid = document.getElementById('filesGrid');
+            const countEl = document.getElementById('filesCount');
+            
+            // Filter out expired files
+            const now = Date.now();
+            const validFiles = files.filter(f => now - f.uploadedAt < 2 * 24 * 60 * 60 * 1000);
+            
+            // Update files if some expired
+            if (validFiles.length !== files.length) {
+                const rooms = loadRooms();
+                const roomIndex = rooms.findIndex(r => r.id === currentRoomId);
+                if (roomIndex !== -1) {
+                    rooms[roomIndex].files = validFiles;
+                    saveRooms(rooms);
+                }
+            }
+
+            countEl.textContent = validFiles.length;
+
+            if (validFiles.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="empty-state-icon">📭</div>
+                        <h3>No files yet</h3>
+                        <p>Upload files using the dropzone above</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = validFiles.map(file => {
+                const timeLeft = getTimeLeft(file.uploadedAt);
+                const isMyFile = file.uploadedBy === currentUserId;
+                const icon = getFileIcon(file.type);
+                
+                return `
+                    <div class="file-card" data-file-id="${file.id}">
+                        <button class="file-delete-btn ${isMyFile ? '' : 'hidden'}" 
+                                onclick="deleteFile('${file.id}')" 
+                                title="Delete your file">
+                            <svg class="icon-sm" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                        </button>
+                        <div class="file-card-header">
+                            <div class="file-icon">${icon}</div>
+                            <div class="file-info">
+                                <div class="file-name" title="${file.name}">${file.name}</div>
+                                <div class="file-size">${formatSize(file.size)}</div>
+                            </div>
+                        </div>
+                        <div class="file-footer">
+                            <span class="file-time">${formatTime(file.uploadedAt)}</span>
+                            <span class="file-expiry ${timeLeft.expired ? 'expired' : ''}">
+                                ${timeLeft.expired ? '⏰ Expired' : `⏳ ${timeLeft.text}`}
+                            </span>
+                            <button class="file-download-btn" onclick="downloadFile('${file.id}')">Download</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // File Operations
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            if (files.length > 0) {
+                uploadFiles(files);
+            }
+            event.target.value = ''; // Reset input
+        }
+
+        function uploadFiles(files) {
+            const rooms = loadRooms();
+            const roomIndex = rooms.findIndex(r => r.id === currentRoomId);
+            if (roomIndex === -1) return;
+
+            let uploaded = 0;
+            const maxSize = 50 * 1024 * 1024; // 50MB
+
+            Array.from(files).forEach(file => {
+                if (file.size > maxSize) {
+                    showToast(`${file.name} is too large (max 50MB)`, 'error');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const fileData = {
+                        id: generateId(),
+                        name: file.name,
+                        size: file.size,
+                        type: file.type,
+                        uploadedBy: currentUserId,
+                        uploadedAt: Date.now(),
+                        dataUrl: e.target.result
+                    };
+
+                    rooms[roomIndex].files.push(fileData);
+                    saveRooms(rooms);
+                    renderFiles(rooms[roomIndex].files);
+                    
+                    uploaded++;
+                    if (uploaded === files.length) {
+                        showToast(`Uploaded ${uploaded} file(s)`, 'success');
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function deleteFile(fileId) {
+            const rooms = loadRooms();
+            const roomIndex = rooms.findIndex(r => r.id === currentRoomId);
+            if (roomIndex === -1) return;
+
+            const file = rooms[roomIndex].files.find(f => f.id === fileId);
+            if (file && file.uploadedBy === currentUserId) {
+                rooms[roomIndex].files = rooms[roomIndex].files.filter(f => f.id !== fileId);
+                saveRooms(rooms);
+                renderFiles(rooms[roomIndex].files);
+                showToast('File deleted', 'success');
+            }
+        }
+
+        function downloadFile(fileId) {
+            const rooms = loadRooms();
+            const room = rooms.find(r => r.id === currentRoomId);
+            if (!room) return;
+
+            const file = room.files.find(f => f.id === fileId);
+            if (!file) return;
+
+            const link = document.createElement('a');
+            link.href = file.dataUrl;
+            link.download = file.name;
+            link.click();
+        }
+
+        // File Expiration
+        function checkExpiredFiles() {
+            if (currentRoomId) {
+                renderRoom();
+            }
+        }
+
+        function getTimeLeft(uploadedAt) {
+            const now = Date.now();
+            const expiry = uploadedAt + (2 * 24 * 60 * 60 * 1000);
+            const remaining = expiry - now;
+
+            if (remaining <= 0) {
+                return { expired: true, text: 'Expired' };
+            }
+
+            const hours = Math.floor(remaining / (60 * 60 * 1000));
+            const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+
+            if (hours >= 24) {
+                const days = Math.floor(hours / 24);
+                return { expired: false, text: `${days}d ${hours % 24}h` };
+            }
+
+            return { expired: false, text: `${hours}h ${minutes}m` };
+        }
+
+        // Utility Functions
+        function formatSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function getFileIcon(type) {
+            if (type.startsWith('image/')) return '🖼️';
+            if (type.startsWith('video/')) return '🎬';
+            if (type.startsWith('audio/')) return '🎵';
+            if (type.includes('pdf')) return '📄';
+            if (type.includes('zip') || type.includes('rar') || type.includes('tar')) return '📦';
+            if (type.includes('text')) return '📝';
+            return '📎';
+        }
+
+        function copyRoomLink() {
+            const link = document.getElementById('roomLink').textContent;
+            navigator.clipboard.writeText(link).then(() => {
+                showToast('Link copied to clipboard!', 'success');
+            });
+        }
+
+        // Toast Notifications
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            
+            const icons = {
+                success: '✓',
+                error: '✕',
+                info: 'ℹ'
+            };
+            
+            toast.innerHTML = `
+                <span class="toast-icon">${icons[type]}</span>
+                <span class="toast-message">${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Drag and Drop
+        const uploadZone = document.getElementById('uploadZone');
+
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                uploadFiles(files);
+            }
+        });
+
+        // Initialize app
+        init();
+    </script>
+</body>
+</html>
