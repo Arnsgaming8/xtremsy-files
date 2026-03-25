@@ -1348,12 +1348,15 @@
             if (!currentRoomId) return;
             
             try {
+                console.log('Fetching from:', `${API_BASE}/rooms/${currentRoomId}/files`);
                 const response = await fetch(`${API_BASE}/rooms/${currentRoomId}/files`);
+                console.log('Response status:', response.status);
                 if (!response.ok) {
                     console.error('Server response not ok:', response.status);
                     return;
                 }
                 const text = await response.text();
+                console.log('Response text:', text);
                 const data = JSON.parse(text);
                 
                 if (data.files && data.files.length > 0) {
