@@ -340,6 +340,34 @@
             opacity: 0.7;
         }
 
+        .upload-progress-container {
+            width: 100%;
+            margin-top: 16px;
+        }
+
+        .upload-progress-bar {
+            height: 6px;
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .upload-progress-bar::before {
+            content: '';
+            display: block;
+            height: 100%;
+            width: var(--progress, 0%);
+            background: var(--accent-gradient);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .upload-progress-text {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
         /* Files Grid */
         .files-section h2 {
             font-size: 1.25rem;
@@ -866,6 +894,10 @@
                 <div class="upload-zone-icon">📁</div>
                 <p class="upload-zone-text"><strong>Click to upload</strong> or drag and drop</p>
                 <p class="upload-zone-hint">Files expire after 2 days • Max 50MB per file</p>
+                <div class="upload-progress-container" id="uploadProgressContainer" style="display: none;">
+                    <div class="upload-progress-bar" id="uploadProgressBar"></div>
+                    <p class="upload-progress-text" id="uploadProgressText">Uploading...</p>
+                </div>
                 <input type="file" id="fileInput" multiple hidden onchange="handleFileSelect(event)">
             </div>
 
@@ -1220,7 +1252,16 @@
             const roomIndex = rooms.findIndex(r => r.id === currentRoomId);
             if (roomIndex === -1) return;
 
+            // Show progress bar
+            const progressContainer = document.getElementById('uploadProgressContainer');
+            const progressBar = document.getElementById('uploadProgressBar');
+            const progressText = document.getElementById('uploadProgressText');
+            progressContainer.style.display = 'block';
+            progressBar.style.setProperty('--progress', '0%');
+            progressText.textContent = 'Preparing upload...'
+
             let uploaded = 0;
+            const totalFiles = files.length;
             const maxSize = 50 * 1024 * 1024; // 50MB
 
             Array.from(files).forEach(file => {
@@ -1230,6 +1271,13 @@
                 }
 
                 const reader = new FileReader();
+                reader.onprogress = function(e) {
+                    if (e.lengthComputable) {
+                        const percent = Math.round((e.loaded / e.total) * 100);
+                        progressBar.style.setProperty('--progress', percent + '%');
+                        progressText.textContent = `Uploading ${file.name}... ${percent}%`;
+                    }
+                };
                 reader.onload = function(e) {
                     const fileData = {
                         id: generateId(),
@@ -1246,7 +1294,14 @@
                     renderFiles(rooms[roomIndex].files);
                     
                     uploaded++;
-                    if (uploaded === files.length) {
+                    const progress = Math.round((uploaded / totalFiles) * 100);
+                    progressBar.style.setProperty('--progress', progress + '%');
+                    progressText.textContent = `Uploaded ${uploaded} of ${totalFiles} file(s)...`;
+
+                    if (uploaded === totalFiles) {
+                        setTimeout(() => {
+                            progressContainer.style.display = 'none';
+                        }, 1000);
                         showToast(`Uploaded ${uploaded} file(s)`, 'success');
                     }
                 };
