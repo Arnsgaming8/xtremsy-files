@@ -1287,6 +1287,7 @@
                     
                     progressText.textContent = `Uploading ${file.name} to GitHub Gist...`;
                     
+                    console.log('Uploading to GitHub with token:', GITHUB_TOKEN.substring(0, 10) + '...');
                     try {
                         // Create GitHub Gist
                         const response = await fetch('https://api.github.com/gists', {
