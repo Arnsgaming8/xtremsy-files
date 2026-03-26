@@ -934,10 +934,21 @@
             SAVED_ROOMS: 'xtremsy_saved_rooms'
         };
 
-        // Server API - GitHub Gists (direct from browser!)
-        // No backend server needed - uses GitHub API directly
-        const GITHUB_TOKEN = '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';
-        const API_BASE = null; // Not needed when using direct GitHub API
+        // GitHub Token - User must enter their own token
+        // Get token at: https://github.com/settings/tokens (with gist scope)
+        let GITHUB_TOKEN = localStorage.getItem('github_token') || '';
+        
+        function promptForToken() {
+            if (!GITHUB_TOKEN) {
+                GITHUB_TOKEN = prompt('Enter your GitHub Personal Access Token (with gist scope):\nhttps://github.com/settings/tokens');
+                if (GITHUB_TOKEN) {
+                    localStorage.setItem('github_token', GITHUB_TOKEN);
+                }
+            }
+        }
+        
+        // Prompt for token on first use
+        promptForToken();
 
         let currentRoomId = null;
         let currentUserId = null;
