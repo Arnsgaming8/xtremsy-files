@@ -1308,7 +1308,9 @@
                         });
                         
                         if (!response.ok) {
-                            throw new Error('GitHub API error');
+                            const errorText = await response.text();
+                            console.error('GitHub API error:', response.status, errorText);
+                            throw new Error('GitHub API error: ' + response.status);
                         }
                         
                         const gistData = await response.json();
