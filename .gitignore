@@ -1,2 +1,1 @@
-# Ignore server folder (not needed for GitHub Pages)
-server/
+# Server folder is now tracked for Render deployment
